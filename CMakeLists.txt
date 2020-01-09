@@ -1,16 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 project (mih)
-
-find_library (HDF5_LIB hdf5)
-
 set (CMAKE_CXX_FLAGS "-DSINGLE_CORE -O2 -fopenmp -DNDEBUG")
-# -Wall -march=native -mtune=native")
-
-include_directories ("${PROJECT_SOURCE_DIR}/include")
-
-add_executable (mih src/array32.cpp src/mihasher.cpp src/sparse_hashtable.cpp src/bucket_group.cpp interface/mih_interface.cpp src/reorder.cpp interface/loadVar.cpp interface/saveRes.cpp)
-target_link_libraries (mih ${HDF5_LIB})
-
-project (linscan)
-add_executable (linscan interface/linscan_interface.cpp src/linscan.cpp interface/loadVar.cpp interface/saveRes.cpp)
-target_link_libraries (linscan ${HDF5_LIB})
+include_directories ("${PROJECT_SOURCE_DIR}/include" "/usr/include/hdf5/serial/" "/usr/lib/x86_64-linux-gnu/hdf5/serial")
+find_library (HDF5_LIB hdf5 PATHS "/usr/lib/x86_64-linux-gnu/hdf5/serial")
+add_library(${PROJECT_NAME} SHARED src/array32.cpp src/mihasher.cpp src/sparse_hashtable.cpp src/bucket_group.cpp interface/mih_interface.cpp src/reorder.cpp interface/loadVar.cpp interface/saveRes.cpp)
+target_compile_options(${PROJECT_NAME} PUBLIC "-pie")
+target_link_libraries(${PROJECT_NAME} ${HDF5_LIB} "-pie -Wl,-E")
+set_property(TARGET ${PROJECT_NAME} PROPERTY POSITION_INDEPENDENT_CODE 1)
