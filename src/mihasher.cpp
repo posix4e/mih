@@ -20,27 +20,15 @@ using namespace std;
  */
 
 extern "C" {
-	qstat* qstat_foo( ) {
-        const auto q = new qstat();
-		q->numres = 0;
-		q->numcand = 0;
-		q->numlookups= 0;
-		q->maxrho = 0;
-		q->ticks = 0;
-    }
-    
-	qstat* qstat_new( UINT32 numres, UINT32 numcand, UINT32 numdups, UINT32 numlookups, UINT32 maxrho, clock_t ticks) {
-		const auto q = new qstat();
-		q->numres = numres;
-		q->numcand = numcand;
-		q->numlookups= numlookups;
-		q->maxrho = maxrho;
-		q->ticks = ticks;
-		return q;
-	}
 	mihasher* mihasher_new(int b, int k) { return new mihasher(b,k); }
-	void mihasher_batchquery( mihasher* mh, UINT32 *results, UINT32 *numres, qstat *stats, UINT8 *queries, UINT32 numq, int dim1queries) {
-		return mh->batchquery(results,numres,stats,queries,numq,dim1queries);
+	void mihasher_batchquery( mihasher* mh, UINT32 *results, UINT32 *numres, UINT32 *numcand, UINT32 *numdups, UINT32 *numlookups, UINT32 *maxrho, clock_t ticks , UINT8 *queries, UINT32 *numq, int *dim1queries) {
+		const auto q = new qstat();
+		q->numres = *numres;
+		q->numcand = *numcand;
+		q->numlookups= *numlookups;
+		q->maxrho = *maxrho;
+		q->ticks = ticks;
+		return mh->batchquery(results,numres,q,queries,*numq,*dim1queries);
 	}
 }
 
